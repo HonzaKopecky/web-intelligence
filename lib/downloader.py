@@ -18,7 +18,4 @@ class Downloader:
 		except error.URLError:
 			raise FileNotFoundError("Robots file URL not recognized.");
 
-		if result.getcode() != 200:
-			raise FileNotFoundError("Did not obtain proper code.");
-
 		return result

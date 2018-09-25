@@ -2,19 +2,32 @@ from urllib.parse import urlparse
 from .downloader import Downloader
 
 class RobotParser:
+	def __init__(self, cache):
+		self.cache = cache
+
 	def canCrawl(self, url):
 		robotsPath = self.getRobotsPath(url)
 		print(robotsPath)
-		try:
-			robots = self.readRobots(robotsPath)
-			if(robots is None):
-				return True
-			rules = self.parseRobots(robots)
-			return self.canAgentCrawlUrl(rules, url, "*")
-		except FileNotFoundError as err:
-			print(err)
+
+		if self.cache.get(robotsPath) is not None:
+			print("\t Cache hit - no need to fetch robots.txt")
+			return self.canAgentCrawlUrl(self.cache.get(robotsPath), url, "*")
+
+		robotsContent = self.readRobots(robotsPath)
+
+		#robots.txt was empty
+		if robotsContent is None:
+			return True
+
+		#robots.txt could not be fetched
+		if robotsContent is False:
 			return False
 
+		rules = self.parseRobots(robotsContent)
+
+		#add the parsed rules to cache where the URL of the file is the key
+		self.cache[robotsPath] = rules
+		return self.canAgentCrawlUrl(self.cache.get(robotsPath), url, "*")
 
 	def canAgentCrawlUrl(self, rules, url, agentname):
 		obj = urlparse(url)
@@ -47,7 +60,11 @@ class RobotParser:
 		return path.scheme + "://" + path.netloc + "/robots.txt"
 
 	def readRobots(self, robotsPath):
-		return Downloader().downloadURLasFile(robotsPath);
+		try:
+			return Downloader().downloadURLasFile(robotsPath);
+		except FileNotFoundError as ex:
+			print(ex)
+			return False
 
 	def parseRobots(self, robotsFile):
 		lines = robotsFile.readlines()

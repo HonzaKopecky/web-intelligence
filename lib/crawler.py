@@ -10,6 +10,7 @@ class Crawler:
 		self.documents = set()
 		self.checked = set()
 		self.urlQueue = queue.Queue()
+		self.robotsCache = dict()
 
 	def addSeed(self, url):
 		self.urlQueue.put(url)
@@ -19,7 +20,7 @@ class Crawler:
 			link = self.urlQueue.get()
 			self.checked.add(link)
 			print(link)
-			if not RobotParser().canCrawl(link):
+			if not RobotParser(self.robotsCache).canCrawl(link):
 				print("\t Cannot crawl - skipping.")
 				continue
 			self.processURL(link)
@@ -30,6 +31,7 @@ class Crawler:
 		try:
 			decoded = rawContent.decode('utf-8')
 		except AttributeError:
+			print("\t Cannot convert to utf-8.");
 			return
 		p = Parser()
 		links = p.getLinks(decoded)
