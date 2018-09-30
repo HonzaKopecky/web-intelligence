@@ -61,9 +61,11 @@ class RobotParser:
 
 	def readRobots(self, robotsPath):
 		try:
-			return Downloader().downloadURLasFile(robotsPath);
-		except FileNotFoundError as ex:
-			print(ex)
+			f = Downloader().downloadURLasFile(robotsPath);
+			if f is not None and f is not False:
+				return f
+			return False
+		except:
 			return False
 
 	def parseRobots(self, robotsFile):

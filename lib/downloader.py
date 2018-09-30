@@ -12,10 +12,13 @@ class Downloader:
 		try:
 			result = request.urlopen(url)
 		except error.HTTPError as er:
-			if er.code != 404:
-				raise FileNotFoundError("Something happened during robots.txt fetching. Error code: " + str(er.code));
-			return None
+			#If we get 404 error file was not found
+			if er.code == 404:
+				return None
+			#In case we get an error other than "NOT FOUND" file cannot be downloaded
+			return False
 		except error.URLError:
-			raise FileNotFoundError("Robots file URL not recognized.");
+			#In case  URL was not recognized (DNS errors mostly) file cannot be downloaded
+			return False
 
 		return result
