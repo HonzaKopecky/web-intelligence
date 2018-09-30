@@ -4,6 +4,7 @@ class BooleanSearch:
 		self.documents = documents
 
 	def b_and(self, left, right):
+		# This is effective thanks to the fact that left and right are sorted
 		intersection = [x for x in left if x in right]
 		return intersection
 
@@ -13,6 +14,9 @@ class BooleanSearch:
 
 	def b_not(self, unwanted):
 		result = list()
+		# Locate all documents that are not in the unwanted list
+		# This would be highly ineficient in real environment - result 
+		# list would have billions of entries
 		for i in range(0, len(self.documents)):
 			if i not in unwanted:
 				result.append(i)
@@ -24,7 +28,7 @@ class BooleanSearch:
 		res = dict(self.index[word])
 		res.pop('count',None)
 		return res
-		
+
 	# def search(self, query):
 	# 	qTerms = self.parseQuery(query)
 	# 	return self.resolveQuery(qTerms)
