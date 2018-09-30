@@ -7,10 +7,8 @@ class RobotParser:
 
 	def canCrawl(self, url):
 		robotsPath = self.getRobotsPath(url)
-		print(robotsPath)
 
 		if self.cache.get(robotsPath) is not None:
-			print("\t Cache hit - no need to fetch robots.txt")
 			return self.canAgentCrawlUrl(self.cache.get(robotsPath), url, "*")
 
 		robotsContent = self.readRobots(robotsPath)
