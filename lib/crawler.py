@@ -8,7 +8,7 @@ from .robotParser import RobotParser
 class Crawler:
 	def __init__(self, limit):
 		self.limit = limit
-		self.documents = set()
+		self.documents = list()
 		self.checked = set()
 		self.urlQueue = queue.Queue()
 		self.robotsCache = dict()
@@ -36,7 +36,8 @@ class Crawler:
 			return
 		p = Parser()
 		links = p.getLinks(decoded)
-		self.documents.add(Document(p.getText(decoded),links))
+		newDocID = len(self.documents)
+		self.documents.append(Document(newDocID, p.getText(decoded), links));
 		self.addLinksToQueue(links)
 
 	def addLinksToQueue(self, links):
