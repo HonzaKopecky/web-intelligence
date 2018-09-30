@@ -15,14 +15,14 @@ class Crawler:
 
 	def addSeed(self, url):
 		self.urlQueue.put(url)
+		self.checked.add(url)
 
 	def crawl(self):
 		while len(self.documents) < self.limit and not self.urlQueue.empty():
 			link = self.urlQueue.get()
-			self.checked.add(link)
 			print(link)
 			if not RobotParser(self.robotsCache).canCrawl(link):
-				print("\t Cannot crawl - skipping.")
+				print("\t skip")
 				continue
 			self.processURL(link)
 			pass
@@ -31,8 +31,8 @@ class Crawler:
 		rawContent = Downloader().downloadURL(url)
 		try:
 			decoded = rawContent.decode('utf-8')
-		except AttributeError:
-			print("\t Cannot convert to utf-8.");
+		except:
+			#sometimes decoding to UTF-8 fails, so we do not crawl the page
 			return
 		p = Parser()
 		links = p.getLinks(decoded)
@@ -44,11 +44,18 @@ class Crawler:
 		for link in links:
 			if link not in self.checked:
 				self.urlQueue.put(link)
+				self.checked.add(link)
 
 	def saveDocuments(self, path):
 		f = open(path, "wb")
 		pickle.dump(self.documents, f)
 		f.close()
+
+	@staticmethod
+	def loadDocuments(path):
+		f = open(path, "rb")
+		docs = pickle.load(f)
+		return docs
 
 
 

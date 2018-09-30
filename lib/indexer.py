@@ -1,3 +1,5 @@
+import pickle
+
 from .tokensParser import TokensParser
 
 class Indexer:
@@ -33,5 +35,14 @@ class Indexer:
 			#the inverted index for every word is sorted too
 			self.index[word] = {'count' : 1, doc.id : 1}
 
-	def printIndex(self):
-		print(self.index)
+	def saveIndex(self, path):
+		f = open(path, "wb")
+		pickle.dump(self.index, f)
+		f.close()
+
+	@staticmethod
+	def loadIndex(path):
+		f = open(path, "rb")
+		index = pickle.load(f)
+		return index
+
