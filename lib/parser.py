@@ -1,5 +1,5 @@
 from html.parser import HTMLParser
-import re
+import re, string
 
 class Parser:
 
@@ -18,10 +18,14 @@ class Parser:
 	def strip_tags(self,html):
 		s = MLStripper()
 		scriptRegex = re.compile(r'<script.*?</script>(?s)', re.DOTALL)
+		styleRegex = re.compile(r'<style.*?</style>(?s)', re.DOTALL)
 		html = scriptRegex.sub('', html)
+		html = styleRegex.sub('',html)
 		s.feed(html)
 		text = s.get_data()
 		text = re.sub('[\n\t ]+', ' ', text)
+		table = str.maketrans("","",string.punctuation)
+		text = text.translate(table)
 		return text
 
 	def getText(self, input):
@@ -48,7 +52,7 @@ class MLStripper(HTMLParser):
 		self.fed.append(d)
 
 	def get_data(self):
-		return ''.join(self.fed)
+		return ' '.join(self.fed)
 
 class FullLinksParser:
 	def getLinks(self, document): 
