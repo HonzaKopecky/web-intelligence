@@ -4,7 +4,7 @@ This is my solution of project work of Web Inteligence course at Aalborg Univers
 
 Project is going to implement simple web search engine.
 
-All the important implementation stuff can be found in lib directory. the-crawler.py is just a script that instantiates a crawler object, starts the crawling and then builds the index.
+All the important implementation stuff can be found in lib directory. the-crawler.py is just a script that instantiates a crawler object, starts the crawling then builds the index and enables user to enter search queries.
 
 So far you can find the following features implemented:
 
@@ -15,3 +15,4 @@ So far you can find the following features implemented:
 * Indexer logic that builds the inverted index
 * Tokens are stemmed using NLTK Snowball stemmer, stop words and punctuation is removed.
 * Index holds the information of token occurences in the set of documents and then number of occurences in every single document.
+* Boolean Search Model based on stacking functions that return result lists
