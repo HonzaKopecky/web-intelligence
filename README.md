@@ -1,10 +1,10 @@
-# Web crawler for Web Intelligence course at AAU
+# Web search engine for Web Intelligence course at AAU
 
 This is my solution of project work of Web Inteligence course at Aalborg University.
 
-Project is going to implement simple web crawler.
+Project is going to implement simple web search engine.
 
-All the important implementation stuff can be found in lib directory. the-crawler.py is just a script that instantiates a crawler object and starts the crawling.
+All the important implementation stuff can be found in lib directory. the-crawler.py is just a script that instantiates a crawler object, starts the crawling and then builds the index.
 
 So far you can find the following features implemented:
 
@@ -12,3 +12,6 @@ So far you can find the following features implemented:
 * HTML document parser that extracts all the URLs from HTML document
 * HTML document parser that strips all HTML from document and stores just the pure text
 * robots.txt parser that can parse the file and verify whether a link should be crawled or not
+* Indexer logic that builds the inverted index
+* Tokens are stemmed using NLTK Snowball stemmer, stop words and punctuation is removed.
+* Index holds the information of token occurences in the set of documents and then number of occurences in every single document.
