@@ -4,7 +4,7 @@ from urllib import error
 class Downloader:
 	def downloadURL(self, url):
 		file = self.downloadURLasFile(url)
-		if file is None:
+		if file is None or file is False:
 			return None
 		return file.read()
 

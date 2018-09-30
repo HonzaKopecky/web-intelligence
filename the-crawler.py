@@ -6,5 +6,5 @@ crawler.addSeed("https://hubpraha.cz")
 
 crawler.crawl()
 
-print(crawler.documents)
+crawler.saveDocuments("out/documents")
 # print(crawler.urlQueue.qsize())

@@ -1,4 +1,5 @@
 import queue
+import pickle
 from .downloader import Downloader
 from .document import Document
 from .parser import Parser
@@ -42,3 +43,11 @@ class Crawler:
 		for link in links:
 			if link not in self.checked:
 				self.urlQueue.put(link)
+
+	def saveDocuments(self, path):
+		f = open(path, "wb")
+		pickle.dump(self.documents, f)
+		f.close()
+
+
+
