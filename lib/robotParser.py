@@ -75,7 +75,7 @@ class RobotParser:
 		for i in lines:
 			splitter = i.decode('utf-8').split(':')
 
-			if splitter[0] == "User-agent":
+			if splitter[0] == "User-agent" or splitter[0] == "User-Agent":
 				agent_name = " ".join(splitter[1].replace("\n", "").split())
 				if any(agent_name == name for name in agents):
 					pass
