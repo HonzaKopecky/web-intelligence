@@ -1,16 +1,32 @@
 from lib.crawler import Crawler
 from lib.indexer import Indexer
+from lib.booleanSearch import BooleanSearch
 
-crawler = Crawler(3)
+# Crawl specified ammount of pages and save them to a file.
+# crawler = Crawler(200)
+# crawler.addSeed("https://hubpraha.cz/en")
+# crawler.crawl()
+# crawler.saveDocuments("out/documents")
 
-crawler.addSeed("https://hubpraha.cz/en")
+# Generate index from crawled documents stored in a file and save it to a file
+# indexer = Indexer()
+# indexer.indexDocs(Crawler.loadDocuments("out/documents"))
+# indexer.saveIndex("out/index")
 
-crawler.crawl()
+# Load pre-built index and pre-crawled documents to perform search over them
+documents = Crawler.loadDocuments("out/documents")
+index = Indexer.loadIndex("out/index")
 
-crawler.saveDocuments("out/documents")
+search = BooleanSearch(index, documents)
 
-indexer = Indexer()
-
-indexer.indexDocs(crawler.documents)
-
-indexer.printIndex()
+print(
+	search.b_and(
+		search.b_and(
+			search.b_term("hub"),
+			search.b_term("praha")
+		),
+		search.b_not(
+			search.b_term("impact")
+		)
+	)
+)
