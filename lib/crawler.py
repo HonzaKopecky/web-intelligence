@@ -20,7 +20,7 @@ class Crawler:
 	def crawl(self):
 		while len(self.documents) < self.limit and not self.urlQueue.empty():
 			link = self.urlQueue.get()
-			print(link)
+			print(str(len(self.documents)) + ": " + link)
 			if not RobotParser(self.robotsCache).canCrawl(link):
 				print("\t skip")
 				continue
@@ -29,10 +29,15 @@ class Crawler:
 
 	def processURL(self, url):
 		rawContent = Downloader().downloadURL(url)
+		#there is no check for the content type so we might receive .pdf file
+		#for this kind of file decoding will fail so it will not be stored
+		#a non-html text file (for example json) may pass the decoding part
+		#I do not prevent such cases
 		try:
 			decoded = rawContent.decode('utf-8')
 		except:
 			#sometimes decoding to UTF-8 fails, so we do not crawl the page
+			print('\t was not stored')
 			return
 		p = Parser()
 		links = p.getLinks(decoded)
