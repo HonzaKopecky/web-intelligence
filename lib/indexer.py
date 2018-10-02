@@ -1,4 +1,4 @@
-import pickle
+import pickle, math
 
 from .tokensParser import TokensParser
 
@@ -45,4 +45,37 @@ class Indexer:
 		f = open(path, "rb")
 		index = pickle.load(f)
 		return index
+
+	@staticmethod
+	def computeTFIDFIndex(index, documents):
+		for term in index:
+			index[term]['idf'] = Indexer.computeIDF(len(index[term]) - 1, len(documents))
+			# print(term)
+			# print("\tcount:"+str(index[term]['count']))
+			# print("\tidf:"+str(index[term]['idf']))
+			for key in index[term]:
+				if key == 'count' or key == 'idf':
+					continue
+				index[term][key] = Indexer.computeTFIDF(index[term]['idf'], index[term][key])
+				#print("\t\tkey: " + str(key) + " -> "+ str(index[term][key]))
+		return index
+
+	@staticmethod
+	def computeTF(tf):
+		if tf == 0:
+			return 0
+		return 1 + math.log10(tf)
+
+	@staticmethod
+	def computeIDF(dft, n):
+		return math.log10(n / dft)
+
+	@staticmethod
+	def computeTFIDF(idf, occurenceCount):
+		tf = Indexer.computeTF(occurenceCount)
+		return tf * idf
+		
+
+
+
 
