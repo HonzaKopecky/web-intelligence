@@ -17,8 +17,9 @@ class Downloader:
 				return None
 			#In case we get an error other than "NOT FOUND" file cannot be downloaded
 			return False
-		except error.URLError:
+		except:
 			#In case  URL was not recognized (DNS errors mostly) file cannot be downloaded
+			#In case of SSL errors (invalid certificate)
 			return False
 
 		return result
