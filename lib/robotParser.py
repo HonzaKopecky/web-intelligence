@@ -13,7 +13,7 @@ class RobotParser:
 
 		robotsContent = self.readRobots(robotsPath)
 
-		#robots.txt was empty
+		#robots.txt was empty or not found
 		if robotsContent is None:
 			return True
 
@@ -58,20 +58,24 @@ class RobotParser:
 		return path.scheme + "://" + path.netloc + "/robots.txt"
 
 	def readRobots(self, robotsPath):
-		try:
-			f = Downloader().downloadURLasFile(robotsPath);
-			if f is not None and f is not False:
-				return f
+		f = Downloader().downloadURLasFile(robotsPath);
+		if f is False:
 			return False
+		
+		if f is None:
+			return None
+
+		try:
+			return f.read().decode('utf-8')
 		except:
 			return False
 
 	def parseRobots(self, robotsFile):
-		lines = robotsFile.readlines()
+		lines = robotsFile.splitlines()
 		agents = {}
 		agent_name = ""
 		for i in lines:
-			splitter = i.decode('utf-8').split(':')
+			splitter = i.split(':')
 
 			if splitter[0] == "User-agent" or splitter[0] == "User-Agent":
 				agent_name = " ".join(splitter[1].replace("\n", "").split())
