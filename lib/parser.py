@@ -23,7 +23,7 @@ class Parser:
 		html = styleRegex.sub('',html)
 		s.feed(html)
 		text = s.get_data()
-		text = re.sub('[\n\t ]+', ' ', text)
+		text = ' '.join(text.split())
 		table = str.maketrans("","",string.punctuation)
 		text = text.translate(table)
 		return text
