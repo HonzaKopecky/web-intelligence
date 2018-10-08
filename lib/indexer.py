@@ -29,7 +29,7 @@ class Indexer:
 				self.index[word][doc.id] = self.index[word][doc.id] + 1
 			else:
 				self.index[word][doc.id] = 1
-			self.index[word]['count'] = self.index[word]['count'] + 1
+				self.index[word]['count'] = self.index[word]['count'] + 1
 		else:
 			#as long as we iterate over a list of documents sorted by ID
 			#the inverted index for every word is sorted too
@@ -50,14 +50,10 @@ class Indexer:
 	def computeTFIDFIndex(index, documents):
 		for term in index:
 			index[term]['idf'] = Indexer.computeIDF(len(index[term]) - 1, len(documents))
-			# print(term)
-			# print("\tcount:"+str(index[term]['count']))
-			# print("\tidf:"+str(index[term]['idf']))
 			for key in index[term]:
 				if key == 'count' or key == 'idf':
 					continue
 				index[term][key] = Indexer.computeTFIDF(index[term]['idf'], index[term][key])
-				#print("\t\tkey: " + str(key) + " -> "+ str(index[term][key]))
 		return index
 
 	@staticmethod
