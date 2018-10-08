@@ -1,5 +1,6 @@
 class Document:
-	def __init__(self, docID, text, outboundLinks):
+	def __init__(self, docID, url, text, outboundLinks):
 		self.id = docID
+		self.url = url
 		self.rawText = text
 		self.links = outboundLinks

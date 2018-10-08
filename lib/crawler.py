@@ -42,7 +42,7 @@ class Crawler:
 		p = Parser()
 		links = p.getLinks(decoded)
 		newDocID = len(self.documents)
-		self.documents.append(Document(newDocID, p.getText(decoded), links));
+		self.documents.append(Document(newDocID, url, p.getText(decoded), links));
 		self.addLinksToQueue(links)
 
 	def addLinksToQueue(self, links):
