@@ -55,6 +55,15 @@ class Indexer:
 			for key in index[term]['postings']:
 				index[term]['postings'][key] = Indexer.computeTFIDF(index[term]['idf'], index[term]['postings'][key])
 				# print("\t\t" + str(key) + " : " + str(index[term]['postings'][key]))
+		parser = TokensParser()
+		for doc in documents:
+			tokens = parser.getTokens(doc.rawText)
+			tokens = set(tokens)
+			length = 0
+			for token in tokens:
+				length = length + math.pow(Indexer.computeTFIDF(index[token]['idf'], index[token]['postings'][doc.id]),2)
+			doc.score = math.sqrt(length)
+		return index
 
 	@staticmethod
 	def computeTFIDF(idf, occurenceCount):
