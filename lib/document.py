@@ -4,3 +4,4 @@ class Document:
 		self.url = url
 		self.rawText = text
 		self.links = outboundLinks
+		self.score = 0
