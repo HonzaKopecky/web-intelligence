@@ -65,3 +65,4 @@ class FullLinksParser:
 				continue
 			links.add(url.group(0))
 		return links
+		

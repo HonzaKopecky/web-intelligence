@@ -106,8 +106,4 @@ class Indexer:
 				maxScore = postings[i]
 		champions[maxPostingKey] = postings[maxPostingKey]
 		postings.pop(maxPostingKey,None)
-
-
-
-
-
+		
