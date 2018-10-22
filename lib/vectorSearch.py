@@ -11,37 +11,38 @@ class VectorSearch:
 		result = self.countScores(docs)
 		return self.orderResults(result)
 
-	def searchVector(self, query):
-		docs = self.getDocs(query)
-		print("Possible documents:")
-		print(docs)
+	def searchVector(self, query, champions = False):
+		docs = self.getDocs(query, champions)
+		# print("Possible documents:")
+		# print(docs)
 		queryVector = self.getQueryVector(query)
-		print("Query vector:")
-		print(queryVector)	
-		result = VectorSearch.countCosineScores(docs, queryVector)
-		print(result)
-		result = VectorSearch.orderResults(result)
+		# print("Query vector:")
+		# print(queryVector)	
+		docsScored = VectorSearch.countCosineScores(docs, queryVector)
+		# print(result)
+		result = VectorSearch.orderResults(docsScored)
 		return result
 
 
-	def getDocs(self, query):
+	def getDocs(self, query, useChampions):
 		parser = TokensParser()
 		tokens = parser.getTokens(query)
-		docs = self.getPossibleDocs(tokens)
+		docs = self.getPossibleDocs(tokens, useChampions)
 		return docs
 		
-	def getPossibleDocs(self, tokens):
+	def getPossibleDocs(self, tokens, useChampions):
 		docs = dict()
 		for token in tokens:
 			if token not in self.index:
 				continue
-			for key in self.index[token]['postings']:
+			candidates = self.index[token]['champions'] if useChampions else self.index[token]['postings']
+			for key in candidates:
 				if key not in docs:
 					docs[key] = dict()
 				docs[key]['id'] = key
 				if not 'tokens' in docs[key]:
 					docs[key]['tokens'] = dict()
-				docs[key]['tokens'][token] = self.index[token]['postings'][key]
+				docs[key]['tokens'][token] = candidates[key]
 				docs[key]['score'] = self.docs[key].score
 		return docs
 
@@ -80,7 +81,7 @@ class VectorSearch:
 		for token in tokens:
 			if not token in self.index:
 				continue
-			print(self.index[token])
+			# print(self.index[token])
 			vector[token] = Indexer.computeTFIDF(self.index[token]['idf'],1)
 		return vector
 
