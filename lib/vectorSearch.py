@@ -1,13 +1,28 @@
 from .tokensParser import TokensParser
+from .indexer import Indexer
 
 class VectorSearch:
-	def __init__(self, index):
+	def __init__(self, index, docs):
 		self.index = index
+		self.docs = docs
 
 	def searchSimpleScore(self, query):
 		docs = self.getDocs(query)
 		result = self.countScores(docs)
 		return self.orderResults(result)
+
+	def searchVector(self, query):
+		docs = self.getDocs(query)
+		print("Possible documents:")
+		print(docs)
+		queryVector = self.getQueryVector(query)
+		print("Query vector:")
+		print(queryVector)	
+		result = VectorSearch.countCosineScores(docs, queryVector)
+		print(result)
+		result = VectorSearch.orderResults(result)
+		return result
+
 
 	def getDocs(self, query):
 		parser = TokensParser()
@@ -20,26 +35,23 @@ class VectorSearch:
 		for token in tokens:
 			if token not in self.index:
 				continue
-			print(self.index[token])
-			for key in self.index[token]:
-				if key in ["count","idf"]:
-					continue
+			for key in self.index[token]['postings']:
 				if key not in docs:
 					docs[key] = dict()
-					docs[key]['id'] = key
-					docs[key]['weights'] = [self.index[token][key]]
-				else:
-					docs[key]['id'] = key
-					docs[key]['weights'].append(self.index[token][key])
+				docs[key]['id'] = key
+				if not 'tokens' in docs[key]:
+					docs[key]['tokens'] = dict()
+				docs[key]['tokens'][token] = self.index[token]['postings'][key]
+				docs[key]['score'] = self.docs[key].score
 		return docs
 
 	@staticmethod
 	def countScores(docs):
 		for key in docs:
-			finalWeight = 0
-			for weight in docs[key]['weights']:
-				finalWeight += weight
-			docs[key]['finalWeight'] = finalWeight
+			score = 0
+			for token in docs[key]['tokens']:
+				score += docs[key]['tokens'][token]
+			docs[key]['score'] = score
 		return docs
 
 	@staticmethod
@@ -56,10 +68,28 @@ class VectorSearch:
 		maxScore = None
 		maxDoc = None
 		for key in docs:
-			if maxScore is None or docs[key]['finalWeight'] > maxScore:
+			if maxScore is None or docs[key]['score'] > maxScore:
 				maxDoc = docs[key]
-				maxScore = docs[key]['finalWeight']
+				maxScore = docs[key]['score']
 		return maxDoc
 
+	def getQueryVector(self, query):
+		parser = TokensParser()
+		tokens = parser.getTokens(query)
+		vector = dict()
+		for token in tokens:
+			if not token in self.index:
+				continue
+			print(self.index[token])
+			vector[token] = Indexer.computeTFIDF(self.index[token]['idf'],1)
+		return vector
 
+	@staticmethod
+	def countCosineScores(docs, queryVector):
+		for doc in docs:
+			cosineScore = 0
+			for token in docs[doc]['tokens']:
+				cosineScore = cosineScore + ((queryVector[token] * docs[doc]['tokens'][token]) / docs[doc]['score'])	
+			docs[doc]['score'] = cosineScore
+		return docs
 
