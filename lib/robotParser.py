@@ -1,4 +1,5 @@
 from urllib.parse import urlparse
+from urllib.robotparser import RobotFileParser
 from .downloader import Downloader
 
 class RobotParser:
@@ -7,11 +8,14 @@ class RobotParser:
 
 	def canCrawl(self, url):
 		robotsPath = self.getRobotsPath(url)
+		parser = RobotFileParser()
 
-		if self.cache.get(robotsPath) is not None:
-			return self.canAgentCrawlUrl(self.cache.get(robotsPath), url, "*")
-
-		robotsContent = self.readRobots(robotsPath)
+		#add the parsed rules to cache where the URL of the file is the key
+		if self.cache.get(robotsPath) is None:
+			robotsContent = self.readRobots(robotsPath)
+			self.cache[robotsPath] = robotsContent
+		else:
+			robotsContent = self.cache.get(robotsPath)
 
 		#robots.txt was empty or not found
 		if robotsContent is None:
@@ -21,12 +25,27 @@ class RobotParser:
 		if robotsContent is False:
 			return False
 
-		rules = self.parseRobots(robotsContent)
+		parser.parse(robotsContent)
+		return parser.can_fetch("*",url);
 
-		#add the parsed rules to cache where the URL of the file is the key
-		self.cache[robotsPath] = rules
-		return self.canAgentCrawlUrl(self.cache.get(robotsPath), url, "*")
+	def getRobotsPath(self, pageUrl):
+		path = urlparse(pageUrl)
+		return path.scheme + "://" + path.netloc + "/robots.txt"
 
+	def readRobots(self, robotsPath):
+		f = Downloader().downloadURLasFile(robotsPath);
+		if f is False:
+			return False
+		
+		if f is None:
+			return None
+
+		try:
+			return f.read().decode('utf-8')
+		except:
+			return False
+
+	#NOT USED ANYMORE IN FAVOR OF USING ROBOTPARSER LIBRARY
 	def canAgentCrawlUrl(self, rules, url, agentname):
 		obj = urlparse(url)
 
@@ -53,23 +72,7 @@ class RobotParser:
 
 		return True
 
-	def getRobotsPath(self, pageUrl):
-		path = urlparse(pageUrl)
-		return path.scheme + "://" + path.netloc + "/robots.txt"
-
-	def readRobots(self, robotsPath):
-		f = Downloader().downloadURLasFile(robotsPath);
-		if f is False:
-			return False
-		
-		if f is None:
-			return None
-
-		try:
-			return f.read().decode('utf-8')
-		except:
-			return False
-
+	#NOT USED ANYMORE IN FAVOR OF USING ROBOTPARSER LIBRARY
 	def parseRobots(self, robotsFile):
 		lines = robotsFile.splitlines()
 		agents = {}
@@ -92,6 +95,3 @@ class RobotParser:
 				else:
 					ruleset[splitter[0]] = [rule]
 		return agents
-
-# print(canCrawl("https://docs.python.org/3/library/urllib.parse.html", "*"))
-# print(canCrawl("https://docs.python.org/3/library/urllib.parse.html", "Google"))
