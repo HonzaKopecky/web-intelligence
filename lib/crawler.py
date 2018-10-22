@@ -1,5 +1,6 @@
 import queue
 import pickle
+from langdetect import detect
 from .downloader import Downloader
 from .document import Document
 from .parser import Parser
@@ -28,7 +29,7 @@ class Crawler:
 			pass
 
 	def processURL(self, url):
-		rawContent = Downloader().downloadURL(url)
+		rawContent = Downloader().downloadURL(url, 'text/html; charset=UTF-8')
 		#there is no check for the content type so we might receive .pdf file
 		#for this kind of file decoding will fail so it will not be stored
 		#a non-html text file (for example json) may pass the decoding part
@@ -37,13 +38,21 @@ class Crawler:
 			decoded = rawContent.decode('utf-8')
 		except:
 			#sometimes decoding to UTF-8 fails, so we do not crawl the page
-			print('\t was not stored')
+			print('\t was not stored - decoding failed or incompatible file type')
 			return
 		p = Parser()
+		rawText = p.getText(decoded)
+		#do not store the document if the language is not english
+		if detect(rawText) != 'en':
+			print('\t was not stored - not english content')
+			return
+		#add document links to the processing queue
 		links = p.getLinks(decoded)
-		newDocID = len(self.documents)
-		self.documents.append(Document(newDocID, url, p.getText(decoded), links));
 		self.addLinksToQueue(links)
+		#store document
+		newDocID = len(self.documents)
+		self.documents.append(Document(newDocID, url, rawText, links));
+		
 
 	def addLinksToQueue(self, links):
 		for link in links:

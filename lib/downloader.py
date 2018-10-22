@@ -2,15 +2,20 @@ from urllib import request
 from urllib import error
 
 class Downloader:
-	def downloadURL(self, url):
+	def downloadURL(self, url, contentType = None):
 		file = self.downloadURLasFile(url)
 		if file is None or file is False:
 			return None
+		if contentType is not None:
+			if file.info()['Content-type'] != contentType:
+				return None
 		return file.read()
 
 	def downloadURLasFile(self, url):
+		req = request.Request(url)
+
 		try:
-			result = request.urlopen(url)
+			return request.urlopen(req)
 		except error.HTTPError as er:
 			#If we get 404 error file was not found
 			if er.code == 404:
