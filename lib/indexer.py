@@ -25,15 +25,15 @@ class Indexer:
 	#occurence count in that document is also stored
 	def addOccurence(self, word, doc):
 		if word in self.index:
-			if doc.id in self.index[word]:
-				self.index[word][doc.id] = self.index[word][doc.id] + 1
+			if doc.id in self.index[word]['postings']:
+				self.index[word]['postings'][doc.id] = self.index[word]['postings'][doc.id] + 1
 			else:
-				self.index[word][doc.id] = 1
+				self.index[word]['postings'][doc.id] = 1
 				self.index[word]['count'] = self.index[word]['count'] + 1
 		else:
 			#as long as we iterate over a list of documents sorted by ID
 			#the inverted index for every word is sorted too
-			self.index[word] = {'count' : 1, doc.id : 1}
+			self.index[word] = {'count' : 1, 'postings' : {doc.id : 1}}
 
 	def saveIndex(self, path):
 		f = open(path, "wb")
@@ -49,28 +49,28 @@ class Indexer:
 	@staticmethod
 	def computeTFIDFIndex(index, documents):
 		for term in index:
-			index[term]['idf'] = Indexer.computeIDF(len(index[term]) - 1, len(documents))
-			for key in index[term]:
-				if key == 'count' or key == 'idf':
-					continue
-				index[term][key] = Indexer.computeTFIDF(index[term]['idf'], index[term][key])
-		return index
-
-	@staticmethod
-	def computeTF(tf):
-		if tf == 0:
-			return 0
-		return 1 + math.log10(tf)
-
-	@staticmethod
-	def computeIDF(dft, n):
-		return math.log10(n / dft)
+			# print(term)
+			index[term]['idf'] = Indexer.computeIDF(index[term]['count'], len(documents))
+			# print("\t" + str(len(documents)) + "/" + str(index[term]['count']) + "=" + str(index[term]['idf']))
+			for key in index[term]['postings']:
+				index[term]['postings'][key] = Indexer.computeTFIDF(index[term]['idf'], index[term]['postings'][key])
+				# print("\t\t" + str(key) + " : " + str(index[term]['postings'][key]))
 
 	@staticmethod
 	def computeTFIDF(idf, occurenceCount):
 		tf = Indexer.computeTF(occurenceCount)
 		return tf * idf
-		
+
+	@staticmethod
+	def computeTF(occurenceCount):
+		if occurenceCount == 0:
+			return 0
+		return 1 + math.log10(occurenceCount)
+
+	@staticmethod
+	def computeIDF(dft, n):
+		return math.log10(n / dft)
+
 
 
 
