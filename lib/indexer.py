@@ -80,6 +80,33 @@ class Indexer:
 	def computeIDF(dft, n):
 		return math.log10(n / dft)
 
+	@staticmethod
+	def computeChampions(index, r):
+		for term in index:
+			index[term]['champions'] = Indexer.getChampions(index[term], r)
+		return index
+
+	@staticmethod
+	def getChampions(term, r):
+		if len(term['postings']) <= r:
+			return term['postings']
+		postings = dict(term['postings'])
+		champions = dict()
+		for i in range(1, r):
+			Indexer.addNextChampion(postings, champions)
+		return champions
+
+	@staticmethod
+	def addNextChampion(postings, champions):
+		maxScore = None
+		maxPostingKey = None
+		for i in postings:
+			if maxScore is None or postings[i] > maxScore:
+				maxPostingKey = i
+				maxScore = postings[i]
+		champions[maxPostingKey] = postings[maxPostingKey]
+		postings.pop(maxPostingKey,None)
+
 
 
 
