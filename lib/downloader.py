@@ -8,7 +8,9 @@ class Downloader:
 		if file is None or file is False:
 			return None
 		if content_type is not None:
-			if file.info()['Content-type'] != content_type:
+			ct = ''.join(file.info()['Content-type'].split())
+			ct = ct.lower()
+			if ct != content_type:
 				return None
 		return file.read()
 
