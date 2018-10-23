@@ -25,8 +25,7 @@ class BooleanSearch:
     def b_term(self, word):
         if word not in self.index:
             return []
-        res = dict(self.index[word])
-        res.pop('count', None)
+        res = self.index[word]['postings']
         return res
 
     # def search(self, query):
