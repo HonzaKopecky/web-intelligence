@@ -30,7 +30,7 @@ class Crawler:
 			pass
 
 	def process_url(self, url):
-		raw_content = Downloader().download_url(url, 'text/html; charset=UTF-8')
+		raw_content = Downloader().download_url(url, 'text/html;charset=utf-8')
 		# there is no check for the content type so we might receive .pdf file
 		# for this kind of file decoding will fail so it will not be stored
 		# a non-html text file (for example json) may pass the decoding part

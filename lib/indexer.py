@@ -16,7 +16,7 @@ class Indexer:
     # tokens are lowercase and stemmed
     # algorithm does not work with synonyms and homonyms in any way (car != automobile)
     def index_doc(self, document):
-        tokens = self.parser.get_tokens(document.rawText)
+        tokens = self.parser.get_tokens(document.raw_text)
         for token in tokens:
             self.add_occurrence(token, document)
 
@@ -58,7 +58,7 @@ class Indexer:
                 # print("\t\t" + str(key) + " : " + str(index[term]['postings'][key]))
         parser = TokensParser()
         for doc in documents:
-            tokens = parser.get_tokens(doc.rawText)
+            tokens = parser.get_tokens(doc.raw_text)
             tokens = set(tokens)
             length = 0
             for token in tokens:
@@ -93,7 +93,7 @@ class Indexer:
             return term['postings']
         postings = dict(term['postings'])
         champions = dict()
-        for i in range(1, r):
+        for i in range(0, r):
             Indexer.add_next_champion(postings, champions)
         return champions
 
