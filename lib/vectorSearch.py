@@ -20,8 +20,9 @@ class VectorSearch:
         # print("Query vector:")
         # print(queryVector)
         docs_scored = VectorSearch.count_cosine_scores(docs, query_vector)
+        docs_ranked = self.apply_page_rank(docs_scored)
         # print(result)
-        result = VectorSearch.order_results(docs_scored)
+        result = VectorSearch.order_results(docs_ranked)
         return result
 
     def get_docs(self, query, use_champions):
@@ -69,9 +70,9 @@ class VectorSearch:
         max_score = None
         max_doc = None
         for key in docs:
-            if max_score is None or docs[key]['score'] > max_score:
+            if max_score is None or docs[key]['ranked_score'] > max_score:
                 max_doc = docs[key]
-                max_score = docs[key]['score']
+                max_score = docs[key]['ranked_score']
         return max_doc
 
     def get_query_vector(self, query):
@@ -93,4 +94,13 @@ class VectorSearch:
                 cosine_score = cosine_score + ((query_vector[token] * docs[doc]['tokens'][token]) / docs[doc]['score'])
             docs[doc]['score'] = cosine_score
         return docs
+
+    # cosine score is simply multiplied with page rank
+    # there are some more advanced techniques to combine page rank and content based search
+    # the ones that I saw are using tfidf and page rank to rank all pages at query time
+    def apply_page_rank(self, results):
+        for key in results:
+            results[key]['ranked_score'] = results[key]['score'] * self.docs[key].page_rank
+            # print(str(results[key]['score']) + '->' + str(results[key]['ranked_score']))
+        return results
 

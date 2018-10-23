@@ -12,10 +12,9 @@ class PageRank:
 
     def rank_documents(self):
         vector = self.get_rank_vector()
-        docs = list(self.documents)
-        for doc in docs:
-            doc.raw_text = vector[doc.id]
-        return docs
+        for doc in self.documents:
+            doc.page_rank = vector[doc.id]
+        return self.documents
 
     def get_rank_vector(self):
         random_matrix = self.get_random_walk_matrix()
