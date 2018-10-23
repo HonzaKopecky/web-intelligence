@@ -5,4 +5,4 @@ class Document:
         self.raw_text = text
         self.links = outbound_links
         self.score = 0
-        self.page_rank = 0
+        self.page_rank = 1
