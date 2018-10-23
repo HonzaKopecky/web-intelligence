@@ -1,7 +1,7 @@
 class Document:
-	def __init__(self, docID, url, text, outboundLinks):
-		self.id = docID
-		self.url = url
-		self.rawText = text
-		self.links = outboundLinks
-		self.score = 0
+    def __init__(self, doc_id, url, text, outbound_links):
+        self.id = doc_id
+        self.url = url
+        self.rawText = text
+        self.links = outbound_links
+        self.score = 0
